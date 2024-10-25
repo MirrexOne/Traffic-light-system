@@ -14,6 +14,7 @@ import dev.mirrex.model.event.Event;
 import dev.mirrex.model.event.QueueData;
 import dev.mirrex.util.TrafficLightUtil;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -126,5 +127,17 @@ public class TrafficSystem implements EventHandler {
             trafficLightExecutor.shutdownNow();
             Thread.currentThread().interrupt();
         }
+    }
+
+    public Map<String, AbstractTrafficLight> getTrafficLights() {
+        return Collections.unmodifiableMap(trafficLights);
+    }
+
+    public OptimizationStrategy getOptimizationStrategy() {
+        return optimizationStrategy;
+    }
+
+    public TrafficSystemConfig getConfig() {
+        return config;
     }
 }
