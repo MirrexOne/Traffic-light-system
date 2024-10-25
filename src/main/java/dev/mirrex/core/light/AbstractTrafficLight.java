@@ -1,17 +1,18 @@
 package dev.mirrex.core.light;
 
 import dev.mirrex.config.TrafficSystemConfig;
+import dev.mirrex.core.handler.EventHandler;
 import dev.mirrex.model.enums.Direction;
 import dev.mirrex.model.enums.TrafficLightType;
 import dev.mirrex.model.event.Event;
 
-import java.beans.EventHandler;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractTrafficLight implements Runnable {
+
     protected final String id;
     protected final Direction direction;
     protected final BlockingQueue<Event> eventQueue;

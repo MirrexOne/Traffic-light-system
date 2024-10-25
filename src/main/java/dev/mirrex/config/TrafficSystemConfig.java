@@ -1,11 +1,10 @@
-// TrafficSystemConfig.java
 package dev.mirrex.config;
 
 public class TrafficSystemConfig {
 
-    private static final int DEFAULT_OPTIMIZATION_INTERVAL = 5000; // 5 seconds
-    private static final int DEFAULT_YELLOW_LIGHT_DURATION = 3000; // 3 seconds
-    private static final int DEFAULT_QUEUE_PROCESSING_INTERVAL = 1000; // 1 second
+    private static final int DEFAULT_OPTIMIZATION_INTERVAL = 5000;
+    private static final int DEFAULT_YELLOW_LIGHT_DURATION = 3000;
+    private static final int DEFAULT_QUEUE_PROCESSING_INTERVAL = 1000;
 
     private final int optimizationInterval;
     private final int yellowLightDuration;

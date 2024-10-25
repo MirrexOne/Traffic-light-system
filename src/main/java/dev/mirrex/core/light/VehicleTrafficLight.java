@@ -1,13 +1,14 @@
 package dev.mirrex.core.light;
 
 import dev.mirrex.config.TrafficSystemConfig;
+import dev.mirrex.core.handler.EventHandler;
 import dev.mirrex.model.enums.Direction;
+import dev.mirrex.model.enums.EventType;
 import dev.mirrex.model.enums.TrafficLightType;
 import dev.mirrex.model.enums.VehicleTrafficLightState;
 import dev.mirrex.model.event.Event;
 import dev.mirrex.model.event.QueueData;
 
-import java.beans.EventHandler;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -61,23 +62,23 @@ public class VehicleTrafficLight extends AbstractTrafficLight {
 
     private void scheduleTimer(long delay, VehicleTrafficLightState nextState) {
         scheduler.schedule(
-            () -> sendEvent(new Event(id, id, EventType.TIMER_ELAPSED, nextState)),
-            delay,
-            TimeUnit.MILLISECONDS
+                () -> sendEvent(new Event(id, id, EventType.TIMER_ELAPSED, nextState)),
+                delay,
+                TimeUnit.MILLISECONDS
         );
     }
 
     private void scheduleQueueProcessing() {
         scheduler.scheduleAtFixedRate(
-            () -> {
-                if (currentState == VehicleTrafficLightState.GREEN && queueSize.get() > 0) {
-                    queueSize.decrementAndGet();
-                    eventHandler.notifyQueueUpdate(this, new QueueData(queueSize.get(), direction));
-                }
-            },
-            0,
-            config.getQueueProcessingInterval(),
-            TimeUnit.MILLISECONDS
+                () -> {
+                    if (currentState == VehicleTrafficLightState.GREEN && queueSize.get() > 0) {
+                        queueSize.decrementAndGet();
+                        eventHandler.notifyQueueUpdate(this, new QueueData(queueSize.get(), direction));
+                    }
+                },
+                0,
+                config.getQueueProcessingInterval(),
+                TimeUnit.MILLISECONDS
         );
     }
 

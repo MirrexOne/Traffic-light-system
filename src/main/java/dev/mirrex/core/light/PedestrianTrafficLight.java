@@ -1,17 +1,18 @@
 package dev.mirrex.core.light;
 
 import dev.mirrex.config.TrafficSystemConfig;
+import dev.mirrex.core.handler.EventHandler;
 import dev.mirrex.model.enums.Direction;
 import dev.mirrex.model.enums.PedestrianTrafficLightState;
 import dev.mirrex.model.enums.TrafficLightType;
 import dev.mirrex.model.event.Event;
 import dev.mirrex.model.event.QueueData;
 
-import java.beans.EventHandler;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class PedestrianTrafficLight extends AbstractTrafficLight {
+
     private PedestrianTrafficLightState currentState;
 
     public PedestrianTrafficLight(
@@ -59,15 +60,15 @@ public class PedestrianTrafficLight extends AbstractTrafficLight {
 
     private void scheduleQueueProcessing() {
         scheduler.scheduleAtFixedRate(
-            () -> {
-                if (currentState == PedestrianTrafficLightState.GREEN && queueSize.get() > 0) {
-                    queueSize.decrementAndGet();
-                    eventHandler.notifyQueueUpdate(this, new QueueData(queueSize.get(), direction));
-                }
-            },
-            0,
-            config.getQueueProcessingInterval(),
-            TimeUnit.MILLISECONDS
+                () -> {
+                    if (currentState == PedestrianTrafficLightState.GREEN && queueSize.get() > 0) {
+                        queueSize.decrementAndGet();
+                        eventHandler.notifyQueueUpdate(this, new QueueData(queueSize.get(), direction));
+                    }
+                },
+                0,
+                config.getQueueProcessingInterval(),
+                TimeUnit.MILLISECONDS
         );
     }
 
