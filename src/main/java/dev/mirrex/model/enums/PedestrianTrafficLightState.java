@@ -1,4 +1,4 @@
-package dev.mirrex.model;
+package dev.mirrex.model.enums;
 
 public enum PedestrianTrafficLightState {
     RED,

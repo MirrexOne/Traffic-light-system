@@ -1,4 +1,4 @@
-package dev.mirrex.model;
+package dev.mirrex.model.enums;
 
 public enum EventType {
     QUEUE_UPDATE,
