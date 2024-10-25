@@ -14,7 +14,6 @@ import dev.mirrex.model.event.Event;
 import dev.mirrex.model.event.QueueData;
 import dev.mirrex.util.TrafficLightUtil;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +63,8 @@ public class TrafficSystem implements EventHandler {
     private void startAdaptiveControl() {
         scheduler.scheduleAtFixedRate(
                 () -> {
-                    Map<Direction, Integer> directionQueues = TrafficLightUtil.aggregateQueuesByDirection(trafficLights);
+                    Map<Direction, Integer> directionQueues =
+                            TrafficLightUtil.aggregateQueuesByDirection(trafficLights);
                     Direction optimalDirection = optimizationStrategy.determineOptimalDirection(directionQueues);
                     updateTrafficLightStates(optimalDirection);
                 },

@@ -3,6 +3,7 @@ package dev.mirrex.model.event;
 import dev.mirrex.model.enums.EventType;
 
 public class Event {
+
     private final String sourceId;
     private final String targetId;
     private final EventType type;

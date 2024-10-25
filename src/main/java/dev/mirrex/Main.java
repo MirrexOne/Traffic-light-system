@@ -9,7 +9,7 @@ public class Main {
         TrafficSystem trafficSystem = new TrafficSystem(config);
 
         try {
-            Thread.sleep(60000); // Run for 1 minute
+            Thread.sleep(60000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
