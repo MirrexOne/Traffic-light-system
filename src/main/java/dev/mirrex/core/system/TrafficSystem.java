@@ -6,14 +6,24 @@ import dev.mirrex.core.light.AbstractTrafficLight;
 import dev.mirrex.core.light.PedestrianTrafficLight;
 import dev.mirrex.core.light.VehicleTrafficLight;
 import dev.mirrex.model.enums.Direction;
+import dev.mirrex.model.enums.EventType;
+import dev.mirrex.model.enums.PedestrianTrafficLightState;
+import dev.mirrex.model.enums.TrafficLightType;
+import dev.mirrex.model.enums.VehicleTrafficLightState;
+import dev.mirrex.model.event.Event;
+import dev.mirrex.model.event.QueueData;
+import dev.mirrex.util.TrafficLightUtil;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class TrafficSystem implements EventHandler {
+
     private final Map<String, AbstractTrafficLight> trafficLights;
     private final ScheduledExecutorService scheduler;
     private final ExecutorService trafficLightExecutor;
@@ -26,17 +36,17 @@ public class TrafficSystem implements EventHandler {
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.trafficLightExecutor = Executors.newCachedThreadPool();
         this.optimizationStrategy = new OptimizationStrategy();
-        
+
         initializeTrafficLights();
         startAdaptiveControl();
     }
 
     private void initializeTrafficLights() {
-        // Vehicle traffic lights
-        TrafficLightUtil.VEHICLE_CONFIGURATIONS.forEach(this::createVehicleTrafficLight);
-        
-        // Pedestrian traffic lights
-        TrafficLightUtil.PEDESTRIAN_CONFIGURATIONS.forEach(this::createPedestrianTrafficLight);
+        TrafficLightUtil.VEHICLE_CONFIGURATIONS.forEach(
+                config -> createVehicleTrafficLight(config.getId(), config.getDirection()));
+
+        TrafficLightUtil.PEDESTRIAN_CONFIGURATIONS.forEach(
+                config -> createPedestrianTrafficLight(config.getId(), config.getDirection()));
     }
 
     private void createVehicleTrafficLight(String id, Direction direction) {
@@ -53,14 +63,14 @@ public class TrafficSystem implements EventHandler {
 
     private void startAdaptiveControl() {
         scheduler.scheduleAtFixedRate(
-            () -> {
-                Map<Direction, Integer> directionQueues = TrafficLightUtil.aggregateQueuesByDirection(trafficLights);
-                Direction optimalDirection = optimizationStrategy.determineOptimalDirection(directionQueues);
-                updateTrafficLightStates(optimalDirection);
-            },
-            0,
-            config.getOptimizationInterval(),
-            TimeUnit.MILLISECONDS
+                () -> {
+                    Map<Direction, Integer> directionQueues = TrafficLightUtil.aggregateQueuesByDirection(trafficLights);
+                    Direction optimalDirection = optimizationStrategy.determineOptimalDirection(directionQueues);
+                    updateTrafficLightStates(optimalDirection);
+                },
+                0,
+                config.getOptimizationInterval(),
+                TimeUnit.MILLISECONDS
         );
     }
 
@@ -104,5 +114,17 @@ public class TrafficSystem implements EventHandler {
         trafficLights.values().forEach(AbstractTrafficLight::stop);
         scheduler.shutdown();
         trafficLightExecutor.shutdown();
+        try {
+            if (!scheduler.awaitTermination(1, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+            if (!trafficLightExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                trafficLightExecutor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();
+            trafficLightExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
     }
 }
